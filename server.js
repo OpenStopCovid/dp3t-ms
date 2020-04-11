@@ -23,6 +23,8 @@ app.post('/declare-case', (req, res) => {
     })
   }
 
+  console.log(`Declared case: ${contactKeys.length} contact keys`)
+
   contactKeys.forEach(contactKey => {
     if (!keysIndex.has(contactKey)) {
       keysIndex.set(contactKey, {addedAt: new Date()})
