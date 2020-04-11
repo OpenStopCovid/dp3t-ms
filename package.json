@@ -1,0 +1,29 @@
+{
+  "name": "dp3t-ms",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "node server"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "ava": "^3.6.0",
+    "xo": "^0.29.0"
+  },
+  "xo": {
+    "semicolon": false,
+    "space": 2,
+    "rules": {
+      "unicorn/prevent-abbreviations": "off"
+    }
+  },
+  "engines": {
+    "node": ">= 12"
+  }
+}
