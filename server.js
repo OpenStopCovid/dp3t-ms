@@ -14,14 +14,16 @@ app.use(express.json({limit: '100kb'}))
 const keysIndex = new Map()
 
 app.post('/declare-case', (req, res) => {
-  if (!req.body.contactKeys || !Array.isArray(req.body.contactKeys)) {
+  const {contactKeys} = req.body
+
+  if (!contactKeys || !Array.isArray(contactKeys)) {
     return res.status(400).send({
       code: 400,
       message: 'contactKeys is required and must be an array'
     })
   }
 
-  req.body.contactKeys.forEach(contactKey => {
+  contactKeys.forEach(contactKey => {
     if (!keysIndex.has(contactKey)) {
       keysIndex.set(contactKey, {addedAt: new Date()})
     }
@@ -31,14 +33,16 @@ app.post('/declare-case', (req, res) => {
 })
 
 app.post('/check-status', (req, res) => {
-  if (!req.body.personalKeys || !Array.isArray(req.body.personalKeys)) {
+  const {personalKeys} = req.body
+
+  if (!personalKeys || !Array.isArray(personalKeys)) {
     return res.status(400).send({
       code: 400,
       message: 'personalKeys is required and must be an array'
     })
   }
 
-  const matchedKeys = req.body.personalKeys.filter(personalKey => {
+  const matchedKeys = personalKeys.filter(personalKey => {
     return keysIndex.has(personalKey)
   })
 
