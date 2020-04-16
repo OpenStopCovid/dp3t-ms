@@ -5,15 +5,16 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "start": "node server"
+    "start": "micro",
+    "dev": "micro-dev"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "morgan": "^1.10.0"
+    "micro": "^9.3.4"
   },
   "devDependencies": {
     "ava": "^3.6.0",
+    "micro-dev": "^3.0.0",
     "xo": "^0.29.0"
   },
   "xo": {

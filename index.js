@@ -1,23 +1,24 @@
 #!/usr/bin/env node
 require('dotenv').config()
 
-const express = require('express')
-const morgan = require('morgan')
-const app = express()
-
-if (process.env.NODE_ENV !== 'production') {
-  app.use(morgan('dev'))
-}
-
-app.use(express.json({limit: '100kb'}))
+const {json, send} = require('micro')
 
 const keysIndex = new Map()
 
-app.post('/declare-case', (req, res) => {
-  const {contactKeys} = req.body
+function methodNotAllowed(req, res) {
+  return send(res, 405)
+}
+
+async function declareCase(req, res) {
+  if (req.method !== 'POST') {
+    return methodNotAllowed(req, res)
+  }
+
+  const body = await json(req)
+  const {contactKeys} = body
 
   if (!contactKeys || !Array.isArray(contactKeys)) {
-    return res.status(400).send({
+    return send(res, 400, {
       code: 400,
       message: 'contactKeys is required and must be an array'
     })
@@ -31,14 +32,19 @@ app.post('/declare-case', (req, res) => {
     }
   })
 
-  res.sendStatus(204)
-})
+  return send(res, 204)
+}
 
-app.post('/check-status', (req, res) => {
-  const {personalKeys} = req.body
+async function checkStatus(req, res) {
+  if (req.method !== 'POST') {
+    return methodNotAllowed(req, res)
+  }
+
+  const body = await json(req)
+  const {personalKeys} = body
 
   if (!personalKeys || !Array.isArray(personalKeys)) {
-    return res.status(400).send({
+    return send(res, 400, {
       code: 400,
       message: 'personalKeys is required and must be an array'
     })
@@ -49,19 +55,25 @@ app.post('/check-status', (req, res) => {
   })
 
   if (matchedKeys.length > 0) {
-    return res.send({
+    return {
       status: 'positive',
       matchedKeys
-    })
+    }
   }
 
-  res.send({
+  return {
     status: 'negative'
-  })
-})
+  }
+}
 
-const port = process.env.PORT || 5000
+module.exports = (req, res) => {
+  if (req.url === '/declare-case') {
+    return declareCase(req, res)
+  }
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`)
-})
+  if (req.url === '/check-status') {
+    return checkStatus(req, res)
+  }
+
+  return send(res, 404)
+}
