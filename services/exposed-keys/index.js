@@ -2,8 +2,9 @@
 require('dotenv').config()
 
 const {json, send} = require('micro')
+const Redis = require('ioredis')
 
-const keysIndex = new Map()
+const redis = new Redis(process.env.REDIS_URL)
 
 function methodNotAllowed(req, res) {
   return send(res, 405)
@@ -26,11 +27,11 @@ async function declareCase(req, res) {
 
   console.log(`Declared case: ${contactKeys.length} contact keys`)
 
-  contactKeys.forEach(contactKey => {
-    if (!keysIndex.has(contactKey)) {
-      keysIndex.set(contactKey, {addedAt: new Date()})
-    }
-  })
+  await redis
+    .multi(contactKeys.map(contactKey => {
+      return ['set', contactKey, {addedAt: new Date()}]
+    }))
+    .exec()
 
   return send(res, 204)
 }
@@ -50,8 +51,14 @@ async function checkStatus(req, res) {
     })
   }
 
-  const matchedKeys = personalKeys.filter(personalKey => {
-    return keysIndex.has(personalKey)
+  const matches = await redis
+    .multi(personalKeys.map(personalKey => {
+      return ['get', personalKey]
+    }))
+    .exec()
+
+  const matchedKeys = personalKeys.filter((personalKey, i) => {
+    return matches[i][1]
   })
 
   if (matchedKeys.length > 0) {

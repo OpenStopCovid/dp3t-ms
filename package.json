@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0",
+    "ioredis": "^4.16.2",
     "micro": "^9.3.4"
   },
   "devDependencies": {
