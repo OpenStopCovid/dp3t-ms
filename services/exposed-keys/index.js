@@ -6,6 +6,8 @@ const Redis = require('ioredis')
 
 const redis = new Redis(process.env.REDIS_URL)
 
+const ONE_DAY = 24 * 3600
+
 function methodNotAllowed(req, res) {
   return send(res, 405)
 }
@@ -29,7 +31,7 @@ async function declareCase(req, res) {
 
   await redis
     .multi(contactKeys.map(contactKey => {
-      return ['set', contactKey, {addedAt: new Date()}]
+      return ['setex', contactKey, 21 * ONE_DAY, {addedAt: new Date()}]
     }))
     .exec()
 
