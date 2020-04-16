@@ -53,12 +53,12 @@ async function checkStatus(req, res) {
 
   const matches = await redis
     .multi(personalKeys.map(personalKey => {
-      return ['get', personalKey]
+      return ['exists', personalKey]
     }))
     .exec()
 
   const matchedKeys = personalKeys.filter((personalKey, i) => {
-    return matches[i][1]
+    return matches[i][1] === 1
   })
 
   if (matchedKeys.length > 0) {
