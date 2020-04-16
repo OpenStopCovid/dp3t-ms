@@ -5,8 +5,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "start": "micro",
-    "dev": "micro-dev"
+    "start:exposed-keys": "micro services/exposed-keys",
+    "dev:exposed-keys": "micro-dev services/exposed-keys"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
