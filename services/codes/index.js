@@ -94,6 +94,28 @@ async function getCodeStatus(req, res) {
   return {type, code, isActive: ttl > 0}
 }
 
+async function useCode(req, res) {
+  if (req.method !== 'POST') {
+    return methodNotAllowed(res)
+  }
+
+  const body = await json(req)
+  const {type, code} = body
+
+  const key = getCodeStorageKey(type, code)
+
+  const result = await redis.multi()
+    .get(key)
+    .del(key)
+    .exec()
+
+  if (!result[0][1]) {
+    return forbidden(res, 'Code does not exist or has expired')
+  }
+
+  return {extras: result[0][1].extras || {}}
+}
+
 module.exports = (req, res) => {
   if (req.url === '/create-code') {
     return createCode(req, res)
@@ -101,6 +123,10 @@ module.exports = (req, res) => {
 
   if (req.url === '/get-code-status') {
     return getCodeStatus(req, res)
+  }
+
+  if (req.url === '/use-code') {
+    return useCode(req, res)
   }
 
   return send(res, 404)
