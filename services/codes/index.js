@@ -70,13 +70,14 @@ async function createCode(req, res) {
   }
 
   const body = await json(req)
-  const {type, emitter, extras} = body
+  const {type, emitter} = body
   const definition = codesDefinitions.find(d => d.type === type && d.emitter === emitter)
 
   if (!definition) {
     return forbidden(res)
   }
 
+  const extras = body.extras || {}
   const {ttl} = definition
 
   let code
