@@ -90,9 +90,26 @@ async function createCode(req, res) {
   return {type, code, expireAt: getExpireAt(ttl)}
 }
 
+async function getCodeStatus(req, res) {
+  if (req.method !== 'POST') {
+    return methodNotAllowed(res)
+  }
+
+  const body = await json(req)
+  const {type, code} = body
+
+  const ttl = await redis.ttl(getCodeStorageKey(type, code))
+
+  return {type, code, isActive: ttl > 0}
+}
+
 module.exports = (req, res) => {
   if (req.url === '/create-code') {
     return createCode(req, res)
+  }
+
+  if (req.url === '/get-code-status') {
+    return getCodeStatus(req, res)
   }
 
   return send(res, 404)
