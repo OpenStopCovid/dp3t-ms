@@ -25,6 +25,10 @@ function getCodesDefinitions() {
 
 const codesDefinitions = getCodesDefinitions()
 
+function getCodeStorageKey(type, code) {
+  return `${type === 'pincode' ? 'pin' : 'qr'}:${code}`
+}
+
 async function generatePinCode() {
   return (await randomNumber(0, 999999999)).toString().padStart('0')
 }
@@ -35,13 +39,13 @@ async function generateQRCode() {
 
 async function createPinCode(ttl, extras) {
   const code = await generatePinCode()
-  const result = await redis.set(`pin:${code}`, {extras}, 'EX', ttl, 'NX')
+  const result = await redis.set(getCodeStorageKey('pincode', code), {extras}, 'EX', ttl, 'NX')
   return result === 'OK' ? code : createPinCode(ttl, extras)
 }
 
 async function createQRCode(ttl, extras) {
   const code = await generateQRCode()
-  await redis.set(`qr:${code}`, {extras}, 'EX', ttl, 'NX')
+  await redis.set(getCodeStorageKey('qrcode', code), {extras}, 'EX', ttl, 'NX')
   return code
 }
 
