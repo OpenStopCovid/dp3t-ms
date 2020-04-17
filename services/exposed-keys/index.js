@@ -4,7 +4,7 @@ require('dotenv').config()
 const {json, send} = require('micro')
 const Redis = require('ioredis')
 
-const redis = new Redis(process.env.REDIS_URL)
+const redis = new Redis(process.env.REDIS_URL, {keyPrefix: 'keys:'})
 
 const ONE_DAY = 24 * 3600
 
