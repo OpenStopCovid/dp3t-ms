@@ -2,84 +2,69 @@
 require('dotenv').config()
 
 const {json, send} = require('micro')
+const {isValid, formatISO} = require('date-fns')
 const Redis = require('ioredis')
 
-const {methodNotAllowed} = require('../../lib/util/http')
+const {methodNotAllowed, badRequest} = require('../../lib/util/http')
 
 const redis = new Redis(process.env.REDIS_URL, {keyPrefix: 'keys:'})
 
-const ONE_DAY = 24 * 3600
+function getCurrentDate() {
+  return formatISO(new Date(), {representation: 'date'})
+}
 
-async function declareCase(req, res) {
+async function declareExposedKey(req, res) {
   if (req.method !== 'POST') {
     return methodNotAllowed(res)
   }
 
   const body = await json(req)
-  const {contactKeys} = body
+  const {key, onset} = body
 
-  if (!contactKeys || !Array.isArray(contactKeys)) {
-    return send(res, 400, {
-      code: 400,
-      message: 'contactKeys is required and must be an array'
-    })
+  if (!key) {
+    return badRequest(res, 'key is a required param')
   }
 
-  console.log(`Declared case: ${contactKeys.length} contact keys`)
+  if (!onset || !isValid(new Date(onset))) {
+    return badRequest(res, 'onset is a required and must be a valid date')
+  }
 
-  await redis
-    .multi(contactKeys.map(contactKey => {
-      return ['setex', contactKey, 21 * ONE_DAY, {addedAt: new Date()}]
-    }))
-    .exec()
+  const currentDate = getCurrentDate()
+  const structuredKey = `${onset}|${key}`
+
+  await redis.sadd(currentDate, structuredKey)
 
   return send(res, 204)
 }
 
-async function checkStatus(req, res) {
-  if (req.method !== 'POST') {
+async function getExposedKeys(req, res) {
+  if (req.method !== 'GET') {
     return methodNotAllowed(res)
   }
 
-  const body = await json(req)
-  const {personalKeys} = body
+  const dayDate = req.url.slice(9, 19)
 
-  if (!personalKeys || !Array.isArray(personalKeys)) {
-    return send(res, 400, {
-      code: 400,
-      message: 'personalKeys is required and must be an array'
-    })
+  if (!isValid(new Date(dayDate))) {
+    return badRequest(res, 'Invalid date requested')
   }
 
-  const matches = await redis
-    .multi(personalKeys.map(personalKey => {
-      return ['exists', personalKey]
-    }))
-    .exec()
-
-  const matchedKeys = personalKeys.filter((personalKey, i) => {
-    return matches[i][1] === 1
-  })
-
-  if (matchedKeys.length > 0) {
-    return {
-      status: 'positive',
-      matchedKeys
-    }
-  }
+  const structuredKeys = await redis.smembers(dayDate)
 
   return {
-    status: 'negative'
+    exposed: structuredKeys.map(skey => ({
+      onset: skey.slice(0, 10),
+      key: skey.slice(11)
+    }))
   }
 }
 
 module.exports = (req, res) => {
-  if (req.url === '/declare-case') {
-    return declareCase(req, res)
+  if (req.url === '/exposed') {
+    return declareExposedKey(req, res)
   }
 
-  if (req.url === '/check-status') {
-    return checkStatus(req, res)
+  if (req.url.startsWith('/exposed/20')) {
+    return getExposedKeys(req, res)
   }
 
   return send(res, 404)
