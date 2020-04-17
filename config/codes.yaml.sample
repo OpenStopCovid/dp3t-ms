@@ -1,0 +1,9 @@
+- emitter: doctor
+  type: qrcode
+  ttl: 1h
+- emitter: doctor
+  type: pincode
+  ttl: 2m
+- emitter: laboratory
+  type: qrcode
+  ttl: 7d
