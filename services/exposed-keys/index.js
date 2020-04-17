@@ -8,13 +8,13 @@ const redis = new Redis(process.env.REDIS_URL, {keyPrefix: 'keys:'})
 
 const ONE_DAY = 24 * 3600
 
-function methodNotAllowed(req, res) {
+function methodNotAllowed(res) {
   return send(res, 405)
 }
 
 async function declareCase(req, res) {
   if (req.method !== 'POST') {
-    return methodNotAllowed(req, res)
+    return methodNotAllowed(res)
   }
 
   const body = await json(req)
@@ -40,7 +40,7 @@ async function declareCase(req, res) {
 
 async function checkStatus(req, res) {
   if (req.method !== 'POST') {
-    return methodNotAllowed(req, res)
+    return methodNotAllowed(res)
   }
 
   const body = await json(req)
