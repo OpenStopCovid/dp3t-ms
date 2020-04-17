@@ -87,7 +87,7 @@ async function createCode(req, res) {
     code = await createPinCode(ttl, extras)
   }
 
-  return {code, expireAt: getExpireAt(ttl)}
+  return {type, code, expireAt: getExpireAt(ttl)}
 }
 
 module.exports = (req, res) => {
