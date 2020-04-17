@@ -4,13 +4,11 @@ require('dotenv').config()
 const {json, send} = require('micro')
 const Redis = require('ioredis')
 
+const {methodNotAllowed} = require('../../lib/util/http')
+
 const redis = new Redis(process.env.REDIS_URL, {keyPrefix: 'keys:'})
 
 const ONE_DAY = 24 * 3600
-
-function methodNotAllowed(res) {
-  return send(res, 405)
-}
 
 async function declareCase(req, res) {
   if (req.method !== 'POST') {

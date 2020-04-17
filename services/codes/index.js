@@ -8,6 +8,7 @@ const ms = require('ms')
 const uuid = require('uuid')
 const randomNumber = require('random-number-csprng')
 const {readYamlSync} = require('../../lib/util/yaml')
+const {forbidden, methodNotAllowed} = require('../../lib/util/http')
 
 const redis = new Redis(process.env.REDIS_URL, {keyPrefix: 'codes:'})
 
@@ -51,17 +52,6 @@ async function createQRCode(ttl, extras) {
 
 function getExpireAt(ttl) {
   return new Date(Date.now() + (ttl * 1000))
-}
-
-function methodNotAllowed(res) {
-  return send(res, 405)
-}
-
-function forbidden(res, message) {
-  return send(res, 403, {
-    code: 403,
-    message
-  })
 }
 
 async function createCode(req, res) {
