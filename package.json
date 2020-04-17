@@ -6,12 +6,18 @@
   "private": false,
   "scripts": {
     "start:exposed-keys": "micro services/exposed-keys",
-    "dev:exposed-keys": "micro-dev services/exposed-keys"
+    "dev:exposed-keys": "micro-dev services/exposed-keys",
+    "start:codes": "micro services/codes",
+    "dev:codes": "micro-dev services/codes"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
     "ioredis": "^4.16.2",
-    "micro": "^9.3.4"
+    "js-yaml": "^3.13.1",
+    "micro": "^9.3.4",
+    "ms": "^2.1.2",
+    "random-number-csprng": "^1.0.2",
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
     "ava": "^3.6.0",
