@@ -33,9 +33,9 @@ Request:
 
 => Response: `204`
 
-----
+---
 
-`GET /exposed/:dayDate` (example: `/exposed/2020-04-17`)
+`GET /exposed/:dayDate` (example: `/exposed/2020-04-17`): Endpoint used to retrieve all exposed keys of a day
 
  => Response: `200`
 
@@ -59,6 +59,77 @@ Request:
 
 ### Codes microservice
 
+---
+
+`POST /create-code`: Enpoint used to create a new code
+
+Request:
+
+```json
+{
+  "emitter": "doctor",
+  "type": "qr",
+  "extras": {...}
+}
+```
+
+=> Response: `200`
+
+```json
+{
+  "code": "49f38a3f-c0ab-4127-8e16-ccfd1fb7772e",
+  "expireAt": "2020-04-17T13:21:01.995Z",
+  "ttl": 3600
+}
+```
+
+---
+
+`POST /get-code-status`: Endpoint used to get actual code status
+
+Request:
+
+```json
+{
+  "code": "49f38a3f-c0ab-4127-8e16-ccfd1fb7772e",
+  "type": "qr"
+}
+```
+
+=> Response: `200`
+
+```json
+{
+  "code": "49f38a3f-c0ab-4127-8e16-ccfd1fb7772e",
+  "type": "qr",
+  "active": true
+}
+```
+
+---
+
+`POST /use-code`: Endpoint used to use a code (called by the "exposed keys" microservice)
+
+Request:
+
+```json
+{
+  "code": "49f38a3f-c0ab-4127-8e16-ccfd1fb7772e",
+  "type": "qr"
+}
+```
+
+=> Response: `200`
+
+```json
+{
+  "extras": {...}
+}
+```
+
+=> Response: `403` if the given code does not exists or has expired
+
+---
 
 ## Prerequisites
 
