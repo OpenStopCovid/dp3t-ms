@@ -1,6 +1,6 @@
 # dp3t-ms
 
-An efficient backend architecture for _decentralized contact tracing_.
+> An efficient backend architecture for _decentralized contact tracing_.
 
 - High performance
 - Microservice-based
@@ -26,7 +26,7 @@ An efficient backend architecture for _decentralized contact tracing_.
 yarn
 ```
 
-## Run
+### Run
 
 ```bash
 # To run the exposed keys microservice
