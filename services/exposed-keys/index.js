@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 require('dotenv').config()
 
-const {json, send, createError, sendError} = require('micro')
+const {json, send, createError} = require('micro')
 const {isValid, formatISO} = require('date-fns')
 const Redis = require('ioredis')
 const got = require('got')
 
-const {methodNotAllowed, badRequest} = require('../../lib/util/http')
+const {methodNotAllowed, badRequest, handleErrors} = require('../../lib/util/http')
 
 const CODES_API_URL = process.env.CODES_API_URL || 'http://localhost:5002'
 
@@ -33,31 +33,27 @@ async function useCode(type, code) {
 
 async function declareExposedKey(req, res) {
   if (req.method !== 'POST') {
-    return methodNotAllowed(res)
+    return methodNotAllowed()
   }
 
   const body = await json(req)
   const {key, onset, authData} = body
 
   if (!key) {
-    return badRequest(res, 'key is a required param')
+    return badRequest('key is a required param')
   }
 
   if (!onset || !isValid(new Date(onset))) {
-    return badRequest(res, 'onset is required and must be a valid date')
+    return badRequest('onset is required and must be a valid date')
   }
 
   if (!authData || !authData.type || !authData.code) {
-    return badRequest(res, 'authData is required and must contains type and code fields')
+    return badRequest('authData is required and must contains type and code fields')
   }
 
   const {type, code} = authData
 
-  try {
-    await useCode(type, code)
-  } catch (error) {
-    return sendError(req, res, error)
-  }
+  await useCode(type, code)
 
   const currentDate = getCurrentDate()
   const structuredKey = `${onset}|${key}`
@@ -67,15 +63,15 @@ async function declareExposedKey(req, res) {
   return send(res, 204)
 }
 
-async function getExposedKeys(req, res) {
+async function getExposedKeys(req) {
   if (req.method !== 'GET') {
-    return methodNotAllowed(res)
+    return methodNotAllowed()
   }
 
   const dayDate = req.url.slice(9, 19)
 
   if (!isValid(new Date(dayDate))) {
-    return badRequest(res, 'Invalid date requested')
+    return badRequest('Invalid date requested')
   }
 
   const structuredKeys = await redis.smembers(dayDate)
@@ -88,7 +84,7 @@ async function getExposedKeys(req, res) {
   }
 }
 
-module.exports = (req, res) => {
+module.exports = handleErrors((req, res) => {
   if (req.url === '/exposed') {
     return declareExposedKey(req, res)
   }
@@ -98,4 +94,4 @@ module.exports = (req, res) => {
   }
 
   return send(res, 404)
-}
+})

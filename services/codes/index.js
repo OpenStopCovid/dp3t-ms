@@ -8,7 +8,7 @@ const ms = require('ms')
 const uuid = require('uuid')
 const randomNumber = require('random-number-csprng')
 const {readYamlSync} = require('../../lib/util/yaml')
-const {forbidden, methodNotAllowed} = require('../../lib/util/http')
+const {forbidden, methodNotAllowed, handleErrors} = require('../../lib/util/http')
 
 const redis = new Redis(process.env.REDIS_URL, {keyPrefix: 'codes:'})
 
@@ -54,9 +54,9 @@ function getExpireAt(ttl) {
   return new Date(Date.now() + (ttl * 1000))
 }
 
-async function createCode(req, res) {
+async function createCode(req) {
   if (req.method !== 'POST') {
-    return methodNotAllowed(res)
+    return methodNotAllowed()
   }
 
   const body = await json(req)
@@ -64,7 +64,7 @@ async function createCode(req, res) {
   const definition = codesDefinitions.find(d => d.type === type && d.emitter === emitter)
 
   if (!definition) {
-    return forbidden(res)
+    return forbidden('Unknown emitter/type couple')
   }
 
   const extras = body.extras || {}
@@ -81,9 +81,9 @@ async function createCode(req, res) {
   return {type, code, expireAt: getExpireAt(ttl), ttl}
 }
 
-async function getCodeStatus(req, res) {
+async function getCodeStatus(req) {
   if (req.method !== 'POST') {
-    return methodNotAllowed(res)
+    return methodNotAllowed()
   }
 
   const body = await json(req)
@@ -94,9 +94,9 @@ async function getCodeStatus(req, res) {
   return {type, code, isActive: ttl > 0}
 }
 
-async function useCode(req, res) {
+async function useCode(req) {
   if (req.method !== 'POST') {
-    return methodNotAllowed(res)
+    return methodNotAllowed()
   }
 
   const body = await json(req)
@@ -110,13 +110,13 @@ async function useCode(req, res) {
     .exec()
 
   if (!result[0][1]) {
-    return forbidden(res, 'Code does not exist or has expired')
+    return forbidden('Code does not exist or has expired')
   }
 
   return {extras: result[0][1].extras || {}}
 }
 
-module.exports = (req, res) => {
+module.exports = handleErrors((req, res) => {
   if (req.url === '/create-code') {
     return createCode(req, res)
   }
@@ -130,4 +130,4 @@ module.exports = (req, res) => {
   }
 
   return send(res, 404)
-}
+})
