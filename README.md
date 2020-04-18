@@ -12,6 +12,54 @@
 - **Exposed keys microservice**
 - **Codes microservice**
 
+## API
+
+### Exposed keys microservice
+
+This API is fully compatible with the [DP-3T](https://github.com/DP-3T) mobile SDKs.
+
+---
+
+`POST /exposed`: Enpoint used to publish the SecretKey
+
+Request:
+
+```json
+{
+  "key": "QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpBQkNERUY=",
+  "onset": "2020-04-10"
+}
+```
+
+=> Response: `204`
+
+----
+
+`GET /exposed/:dayDate` (example: `/exposed/2020-04-17`)
+
+ => Response: `200`
+
+```json
+{
+  "exposed": [
+    {
+      "key": "AZERTYUIOPSDFGHJKLSDFGHJSDFGH=",
+      "onset": "2020-04-03"
+    },
+    ...
+    {
+      "key": "YBFKGG43IBFJSLHF84VFQJFLFHBSVFJJ=",
+      "onset": "2020-04-03"
+    }
+  ]
+}
+```
+
+---
+
+### Codes microservice
+
+
 ## Prerequisites
 
 - [Node.js](https://nodejs.org) LTS (12 and above)
