@@ -93,7 +93,7 @@ Request:
 ```json
 {
   "code": "49f38a3f-c0ab-4127-8e16-ccfd1fb7772e",
-  "type": "qr"
+  "type": "qrcode"
 }
 ```
 
@@ -102,7 +102,7 @@ Request:
 ```json
 {
   "code": "49f38a3f-c0ab-4127-8e16-ccfd1fb7772e",
-  "type": "qr",
+  "type": "qrcode",
   "active": true
 }
 ```
@@ -116,7 +116,7 @@ Request:
 ```json
 {
   "code": "49f38a3f-c0ab-4127-8e16-ccfd1fb7772e",
-  "type": "qr"
+  "type": "qrcode"
 }
 ```
 
