@@ -5,10 +5,10 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "start:exposed-keys": "micro services/exposed-keys",
-    "dev:exposed-keys": "micro-dev services/exposed-keys",
-    "start:codes": "micro services/codes",
-    "dev:codes": "micro-dev services/codes"
+    "start:exposed-keys": "micro -l tcp://0.0.0.0:${PORT-5001} services/exposed-keys",
+    "dev:exposed-keys": "micro-dev -l tcp://0.0.0.0:${PORT-5001} services/exposed-keys",
+    "start:codes": "micro -l tcp://0.0.0.0:${PORT-5002} services/codes",
+    "dev:codes": "micro-dev -l tcp://0.0.0.0:${PORT-5002} services/codes"
   },
   "dependencies": {
     "date-fns": "^2.12.0",
