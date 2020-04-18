@@ -18,6 +18,12 @@
 - [Redis](https://redis.io)
 - [Yarn](https://yarnpkg.com) (optional)
 
+## Configuration
+
+Both microservices need a Redis database to work. You can provide the `REDIS_URL` environment variable through a `.env` file.
+
+To run the "codes" microservice, you have to provide some code types. To start, you can just create the `config/codes.yaml` by copying the existing `config/codes.yaml.sample` file.
+
 ## Development
 
 ### Installation
