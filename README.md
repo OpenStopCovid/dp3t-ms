@@ -68,7 +68,7 @@ Request:
 ```json
 {
   "emitter": "doctor",
-  "type": "qr",
+  "type": "qrcode",
   "extras": {...}
 }
 ```
@@ -77,6 +77,7 @@ Request:
 
 ```json
 {
+  "type": "qrcode",
   "code": "49f38a3f-c0ab-4127-8e16-ccfd1fb7772e",
   "expireAt": "2020-04-17T13:21:01.995Z",
   "ttl": 3600
