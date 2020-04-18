@@ -2,15 +2,15 @@
 
 > An efficient backend architecture for _decentralized contact tracing_.
 
-- High performance
-- Microservice-based
-- Modular
-- Compatible with DP-3T
+- **High performance**
+- **Microservice-based**
+- **Modular**
+- **Compatible with [DP-3T](https://github.com/DP-3T/documents)**
 
 ## Available microservices
 
-- Exposed keys microservice
-- Codes microservice
+- **Exposed keys microservice**
+- **Codes microservice**
 
 ## Prerequisites
 
@@ -29,10 +29,10 @@ yarn
 ### Run
 
 ```bash
-# To run the exposed keys microservice
+# To run the "exposed keys" microservice (will listen en port 5001)
 yarn dev:exposed-keys
 
-# To run the codes microservice
+# To run the "codes" microservice (will listen en port 5002)
 yarn dev:codes
 ```
 
@@ -49,10 +49,10 @@ yarn --prod
 ### Run
 
 ```bash
-# To run the exposed keys microservice
+# To run the "exposed keys" microservice
 yarn start:exposed-keys
 
-# To run the codes microservice
+# To run the "codes" microservice
 yarn start:codes
 ```
 
