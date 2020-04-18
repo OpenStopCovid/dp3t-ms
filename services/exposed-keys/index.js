@@ -1,16 +1,34 @@
 #!/usr/bin/env node
 require('dotenv').config()
 
-const {json, send} = require('micro')
+const {json, send, createError, sendError} = require('micro')
 const {isValid, formatISO} = require('date-fns')
 const Redis = require('ioredis')
+const got = require('got')
 
 const {methodNotAllowed, badRequest} = require('../../lib/util/http')
+
+const CODES_API_URL = process.env.CODES_API_URL || 'http://localhost:5002'
 
 const redis = new Redis(process.env.REDIS_URL, {keyPrefix: 'keys:'})
 
 function getCurrentDate() {
   return formatISO(new Date(), {representation: 'date'})
+}
+
+async function useCode(type, code) {
+  const gotOptions = {json: {type, code}, responseType: 'json'}
+
+  try {
+    const response = await got.post(CODES_API_URL + '/use-code', gotOptions)
+    return response.body
+  } catch (error) {
+    if (error.response && error.response.statusCode && error.response.statusCode === 403) {
+      throw createError(403, 'Not valid authData')
+    }
+
+    throw createError(500, 'An unexpected error has occurred')
+  }
 }
 
 async function declareExposedKey(req, res) {
@@ -19,14 +37,26 @@ async function declareExposedKey(req, res) {
   }
 
   const body = await json(req)
-  const {key, onset} = body
+  const {key, onset, authData} = body
 
   if (!key) {
     return badRequest(res, 'key is a required param')
   }
 
   if (!onset || !isValid(new Date(onset))) {
-    return badRequest(res, 'onset is a required and must be a valid date')
+    return badRequest(res, 'onset is required and must be a valid date')
+  }
+
+  if (!authData || !authData.type || !authData.code) {
+    return badRequest(res, 'authData is required and must contains type and code fields')
+  }
+
+  const {type, code} = authData
+
+  try {
+    await useCode(type, code)
+  } catch (error) {
+    return sendError(req, res, error)
   }
 
   const currentDate = getCurrentDate()
