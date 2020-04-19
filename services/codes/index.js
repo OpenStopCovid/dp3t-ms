@@ -9,9 +9,7 @@ const uuid = require('uuid')
 const randomNumber = require('random-number-csprng')
 const {readYamlSync} = require('../../lib/util/yaml')
 const {forbidden, methodNotAllowed, notFound} = require('../../lib/util/http')
-const {handleErrors} = require('../../lib/util/middlewares')
-
-const redis = new Redis(process.env.REDIS_URL, {keyPrefix: 'codes:'})
+const {handleErrors, injectRedis} = require('../../lib/util/middlewares')
 
 function getCodesDefinitions() {
   const definitions = readYamlSync(join(process.cwd(), 'config', 'codes.yaml'))
@@ -39,13 +37,13 @@ async function generateQRCode() {
   return uuid.v4()
 }
 
-async function createPinCode(ttl, extras) {
+async function createPinCode(redis, ttl, extras) {
   const code = await generatePinCode()
   const result = await redis.set(getCodeStorageKey('pincode', code), {extras}, 'EX', ttl, 'NX')
   return result === 'OK' ? code : createPinCode(ttl, extras)
 }
 
-async function createQRCode(ttl, extras) {
+async function createQRCode(redis, ttl, extras) {
   const code = await generateQRCode()
   await redis.set(getCodeStorageKey('qrcode', code), {extras}, 'EX', ttl, 'NX')
   return code
@@ -74,9 +72,9 @@ async function createCode(req) {
   let code
 
   if (type === 'qrcode') {
-    code = await createQRCode(ttl, extras)
+    code = await createQRCode(req.redis, ttl, extras)
   } else if (type === 'pincode') {
-    code = await createPinCode(ttl, extras)
+    code = await createPinCode(req.redis, ttl, extras)
   }
 
   return {type, code, expireAt: getExpireAt(ttl), ttl}
@@ -90,7 +88,7 @@ async function getCodeStatus(req) {
   const body = await json(req)
   const {type, code} = body
 
-  const ttl = await redis.ttl(getCodeStorageKey(type, code))
+  const ttl = await req.redis.ttl(getCodeStorageKey(type, code))
 
   return {type, code, isActive: ttl > 0}
 }
@@ -105,7 +103,7 @@ async function useCode(req) {
 
   const key = getCodeStorageKey(type, code)
 
-  const result = await redis.multi()
+  const result = await req.redis.multi()
     .get(key)
     .del(key)
     .exec()
@@ -117,7 +115,7 @@ async function useCode(req) {
   return {extras: result[0][1].extras || {}}
 }
 
-module.exports = handleErrors((req, res) => {
+function handler(req, res) {
   if (req.url === '/create-code') {
     return createCode(req, res)
   }
@@ -131,4 +129,9 @@ module.exports = handleErrors((req, res) => {
   }
 
   notFound()
-})
+}
+
+module.exports = injectRedis(
+  handleErrors(handler),
+  new Redis(process.env.REDIS_URL, {keyPrefix: 'codes:'})
+)

@@ -7,11 +7,9 @@ const Redis = require('ioredis')
 const got = require('got')
 
 const {methodNotAllowed, forbidden, badRequest, notFound, noContent} = require('../../lib/util/http')
-const {handleErrors} = require('../../lib/util/middlewares')
+const {handleErrors, injectRedis} = require('../../lib/util/middlewares')
 
 const CODES_API_URL = process.env.CODES_API_URL || 'http://localhost:5002'
-
-const redis = new Redis(process.env.REDIS_URL, {keyPrefix: 'keys:'})
 
 function getCurrentDate() {
   return formatISO(new Date(), {representation: 'date'})
@@ -59,7 +57,7 @@ async function declareExposedKey(req, res) {
   const currentDate = getCurrentDate()
   const structuredKey = `${onset}|${key}`
 
-  await redis.sadd(currentDate, structuredKey)
+  await req.redis.sadd(currentDate, structuredKey)
 
   noContent(res)
 }
@@ -75,7 +73,7 @@ async function getExposedKeys(req) {
     return badRequest('Invalid date requested')
   }
 
-  const structuredKeys = await redis.smembers(dayDate)
+  const structuredKeys = await req.redis.smembers(dayDate)
 
   return {
     exposed: structuredKeys.map(skey => ({
@@ -85,7 +83,7 @@ async function getExposedKeys(req) {
   }
 }
 
-module.exports = handleErrors((req, res) => {
+function handler(req, res) {
   if (req.url === '/exposed') {
     return declareExposedKey(req, res)
   }
@@ -95,4 +93,9 @@ module.exports = handleErrors((req, res) => {
   }
 
   notFound()
-})
+}
+
+module.exports = injectRedis(
+  handleErrors(handler),
+  new Redis(process.env.REDIS_URL, {keyPrefix: 'keys:'})
+)
