@@ -2,13 +2,13 @@
 require('dotenv').config()
 
 const {join} = require('path')
-const {json, send} = require('micro')
+const {json} = require('micro')
 const Redis = require('ioredis')
 const ms = require('ms')
 const uuid = require('uuid')
 const randomNumber = require('random-number-csprng')
 const {readYamlSync} = require('../../lib/util/yaml')
-const {forbidden, methodNotAllowed, handleErrors} = require('../../lib/util/http')
+const {forbidden, methodNotAllowed, notFound, handleErrors} = require('../../lib/util/http')
 
 const redis = new Redis(process.env.REDIS_URL, {keyPrefix: 'codes:'})
 
@@ -129,5 +129,5 @@ module.exports = handleErrors((req, res) => {
     return useCode(req, res)
   }
 
-  return send(res, 404)
+  notFound()
 })

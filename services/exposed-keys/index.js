@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 require('dotenv').config()
 
-const {json, send, createError} = require('micro')
+const {json, createError} = require('micro')
 const {isValid, formatISO} = require('date-fns')
 const Redis = require('ioredis')
 const got = require('got')
 
-const {methodNotAllowed, badRequest, handleErrors} = require('../../lib/util/http')
+const {methodNotAllowed, forbidden, badRequest, notFound, handleErrors, noContent} = require('../../lib/util/http')
 
 const CODES_API_URL = process.env.CODES_API_URL || 'http://localhost:5002'
 
@@ -24,7 +24,7 @@ async function useCode(type, code) {
     return response.body
   } catch (error) {
     if (error.response && error.response.statusCode && error.response.statusCode === 403) {
-      throw createError(403, 'Not valid authData')
+      forbidden('Not valid authData')
     }
 
     throw createError(500, 'An unexpected error has occurred')
@@ -60,7 +60,7 @@ async function declareExposedKey(req, res) {
 
   await redis.sadd(currentDate, structuredKey)
 
-  return send(res, 204)
+  noContent(res)
 }
 
 async function getExposedKeys(req) {
@@ -93,5 +93,5 @@ module.exports = handleErrors((req, res) => {
     return getExposedKeys(req, res)
   }
 
-  return send(res, 404)
+  notFound()
 })
