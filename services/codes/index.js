@@ -8,7 +8,8 @@ const ms = require('ms')
 const uuid = require('uuid')
 const randomNumber = require('random-number-csprng')
 const {readYamlSync} = require('../../lib/util/yaml')
-const {forbidden, methodNotAllowed, notFound, handleErrors} = require('../../lib/util/http')
+const {forbidden, methodNotAllowed, notFound} = require('../../lib/util/http')
+const {handleErrors} = require('../../lib/util/middlewares')
 
 const redis = new Redis(process.env.REDIS_URL, {keyPrefix: 'codes:'})
 

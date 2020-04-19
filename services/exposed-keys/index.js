@@ -6,7 +6,8 @@ const {isValid, formatISO} = require('date-fns')
 const Redis = require('ioredis')
 const got = require('got')
 
-const {methodNotAllowed, forbidden, badRequest, notFound, handleErrors, noContent} = require('../../lib/util/http')
+const {methodNotAllowed, forbidden, badRequest, notFound, noContent} = require('../../lib/util/http')
+const {handleErrors} = require('../../lib/util/middlewares')
 
 const CODES_API_URL = process.env.CODES_API_URL || 'http://localhost:5002'
 
