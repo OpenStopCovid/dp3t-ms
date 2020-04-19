@@ -27,7 +27,11 @@ Request:
 ```json
 {
   "key": "QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpBQkNERUY=",
-  "onset": "2020-04-10"
+  "onset": "2020-04-10",
+  "authData": {
+    "type": "qrcode",
+    "code": "fb604540-9f1f-4c9b-b51b-6b69bbd4ed62"
+  }
 }
 ```
 
