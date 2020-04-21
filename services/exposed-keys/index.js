@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 require('dotenv').config()
 
-const Redis = require('ioredis')
-
+const {createRedis} = require('../../lib/util/redis')
 const {notFound} = require('../../lib/util/http')
 const {handleErrors, injectRedis} = require('../../lib/util/middlewares')
 
@@ -23,5 +22,5 @@ function handler(req, res) {
 
 module.exports = injectRedis(
   handleErrors(handler),
-  new Redis(process.env.REDIS_URL, {keyPrefix: 'keys:'})
+  createRedis(process.env.REDIS_URL, {keyPrefix: 'keys:'})
 )
