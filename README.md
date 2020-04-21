@@ -186,6 +186,13 @@ yarn start:exposed-keys
 yarn start:codes
 ```
 
+## Docker
+
+```bash
+docker-compose build
+docker-compose run
+```
+
 ## License
 
 MIT
