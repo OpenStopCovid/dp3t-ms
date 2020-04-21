@@ -46,6 +46,12 @@ yarn dev:exposed-keys
 yarn dev:codes
 ```
 
+### Test
+
+```
+yarn test
+```
+
 ## Production
 
 ### Installation

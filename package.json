@@ -8,7 +8,8 @@
     "start:exposed-keys": "micro services/exposed-keys",
     "dev:exposed-keys": "micro-dev -p 5001 services/exposed-keys",
     "start:codes": "micro services/codes",
-    "dev:codes": "micro-dev -p 5002 services/codes"
+    "dev:codes": "micro-dev -p 5002 services/codes",
+    "test": "nyc ava"
   },
   "dependencies": {
     "date-fns": "^2.12.0",
@@ -22,8 +23,9 @@
     "uuid": "^7.0.3"
   },
   "devDependencies": {
-    "ava": "^3.6.0",
+    "ava": "^3.7.1",
     "micro-dev": "^3.0.0",
+    "nyc": "^15.0.1",
     "xo": "^0.29.0"
   },
   "xo": {
