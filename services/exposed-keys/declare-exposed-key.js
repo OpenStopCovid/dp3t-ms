@@ -21,7 +21,7 @@ async function useCode(type, code) {
       forbidden('Not valid authData')
     }
 
-    throw createError(500, 'An unexpected error has occurred')
+    throw new Error('Unable to use the given code')
   }
 }
 
