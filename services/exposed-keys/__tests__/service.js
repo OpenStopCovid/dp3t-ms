@@ -1,11 +1,11 @@
 const test = require('ava')
 const request = require('supertest')
 const micro = require('micro')
+const {formatISO} = require('date-fns')
 const nock = require('nock')
 const service = require('..')
 
 const CODES_API_URL = process.env.CODES_API_URL || 'http://localhost:5002'
-
 let server
 
 test.serial('start exposed keys service', async t => {
@@ -34,12 +34,13 @@ test.serial('declare exposed keys', async t => {
 })
 
 test.serial('get exposed keys for date', async t => {
+  const date = formatISO(new Date(), {representation: 'date'})
   const response = await request(server)
-  .get('/exposed/2020-04-10')
-  .expect(200, [{
+  .get(`/exposed/${date}`)
+  .expect(200, { exposed: [{
     key: 'QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpBQkNERUY=',
     onset: '2020-04-10'
-  }])
+  }]})
   t.pass()
 })
 
