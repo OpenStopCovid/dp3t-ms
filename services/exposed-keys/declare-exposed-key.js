@@ -1,4 +1,4 @@
-const {json, createError} = require('micro')
+const {json} = require('micro')
 const {isValid, formatISO} = require('date-fns')
 const got = require('got')
 
