@@ -1,18 +1,29 @@
 
-# MacOSX - Tutorial
+# Tutorial
 
 ## Setup
 
 ### Install Redis
+MacOsx
 ```
 brew update
 brew install redis
 ```
+Linux (debian)
+````
+sudo apt-get install redis-server
+sudo systemctl enable redis-server.service
+````
 
 ### Start Redis
+MacOsx
 ```
 brew services start redis
 ```
+Linux (debian)
+````
+sudo systemctl enable redis-server.service
+````
 
 ### Test Redis
 ```
