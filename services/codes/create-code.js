@@ -71,4 +71,11 @@ async function createCode(req) {
   return {type, code, expireAt: getExpireAt(ttl), ttl}
 }
 
-module.exports = {createCode}
+module.exports = {
+  generatePinCode,
+  createCode,
+  createPinCode,
+  createQRCode,
+  generateQRCode,
+  getCodesDefinitions
+}
