@@ -4,3 +4,4 @@ node_modules
 .env
 config/*.yaml
 .nyc_output
+coverage
