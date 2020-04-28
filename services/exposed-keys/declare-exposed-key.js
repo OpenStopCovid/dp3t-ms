@@ -4,7 +4,10 @@ const got = require('got')
 
 const {methodNotAllowed, forbidden, badRequest, noContent} = require('../../lib/util/http')
 
-const CODES_API_URL = process.env.CODES_API_URL || 'http://localhost:5002'
+const CODES_API_URL = process.env.CODES_API_URL || (_ => {
+  console.error('env.CODES_API_URL not_defined. Aborting.')
+  process.abort()
+})()
 
 function getCurrentDate() {
   return formatISO(new Date(), {representation: 'date'})
