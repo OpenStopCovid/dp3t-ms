@@ -6,7 +6,8 @@ const {createRedis} = require('../../../lib/util/redis')
 const {handleErrors, injectRedis} = require('../../../lib/util/middlewares')
 const {createCode, generatePinCode, generateQRCode} = require('../create-code')
 
-const redis = createRedis()
+require('dotenv').config()
+const redis = createRedis(process.env.REDIS_URL)
 
 function createService() {
   return micro(injectRedis(handleErrors(createCode), redis))
