@@ -28,3 +28,12 @@ services:
       - ./config/codes.yaml.sample:/app/config/codes.yaml
     ports:
       - "5002:3000"
+
+  tester:
+    build:
+      context: .
+      target: tester
+    command: yarn test
+    depends_on:
+      - codes
+      - exposed_keys
