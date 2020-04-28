@@ -29,7 +29,7 @@ services:
     environment:
       REDIS_URL: redis://redis:6379
     volumes:
-      - ./config/codes.yaml:/app/config.codes.yaml
+      - ./config/codes.yaml.sample:/app/config/codes.yaml
     ports:
       - "5002:3000"
     networks:
