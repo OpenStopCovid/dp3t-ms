@@ -3,8 +3,6 @@ services:
 
   redis:
     image: redis:alpine
-    networks:
-      - default
 
   exposed_keys:
     build: .
@@ -17,8 +15,6 @@ services:
       CODES_API_URL: http://codes:3000
     ports:
       - "5001:3000"
-    networks:
-      - default
 
   codes:
     build: .
@@ -32,8 +28,3 @@ services:
       - ./config/codes.yaml.sample:/app/config/codes.yaml
     ports:
       - "5002:3000"
-    networks:
-      - default
-
-networks:
-  default:
