@@ -1,0 +1,35 @@
+name: docker publish
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  REPO: docker.pkg.github.com/${{ github.repository }}
+  LOGIN: ${{ github.actor }}
+  PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+  containers: codes exposed_keys
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - run: docker-compose build
+      env:
+        DOCKER_BUILDKIT: 1
+        COMPOSE_DOCKER_CLI_BUILD: 1
+
+    - name: Publish images
+      run: |
+              docker login ${REPO%%/*} \
+              -u "$LOGIN" --password-stdin <<< "$PASSWORD"
+
+              for container in $containers;
+              do
+                  docker tag ${PWD##*/}_$container $REPO/$container
+                  docker push $REPO/$container
+              done
