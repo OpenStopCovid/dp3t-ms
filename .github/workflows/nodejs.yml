@@ -23,4 +23,9 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn
     - run: yarn lint
+    - name: Run tests-setup
+      run: |
+              docker run -d -p 6379:6379 redis:alpine
+              cp config/codes.yaml{.sample,}
+              cp .env{.sample,}
     - run: yarn test
